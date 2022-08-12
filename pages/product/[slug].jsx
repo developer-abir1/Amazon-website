@@ -9,6 +9,7 @@ import { useContext } from 'react';
 
 import { toast } from 'react-toastify';
 export default function ProcuctScreens() {
+  const router = useRouter();
   const { query } = useRouter();
   const { slug } = query;
   const { state, dispatch } = useContext(Store);
@@ -27,11 +28,13 @@ export default function ProcuctScreens() {
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+
+    router.push('/cart');
   };
 
   return (
     <Layout title={product.name}>
-      <div>
+      <div className="py-2">
         <Link href="/">Back to Product</Link>
       </div>
 

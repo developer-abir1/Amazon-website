@@ -5,8 +5,8 @@ import React from 'react';
 import { useContext } from 'react';
 import Layout from '../components/Layout';
 import { Store } from '../utils/store';
-
-export default function CartScreen() {
+import dynamic from 'next/dynamic';
+function CartScreen() {
   const { state, dispatch } = useContext(Store);
 
   const router = useRouter();
@@ -17,6 +17,11 @@ export default function CartScreen() {
 
   const handlRemoveItem = (item) => {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+  };
+
+  const handleUpdateQty = (item, qty) => {
+    const quantity = Number(qty);
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
   };
 
   return (
@@ -55,7 +60,18 @@ export default function CartScreen() {
                         </a>
                       </Link>
                     </td>
-                    <td className="p-5 text-right">{item.quantity}</td>
+                    <td className="p-5 text-right">
+                      <select
+                        value={item.quantity}
+                        onChange={(e) => handleUpdateQty(item, e.target.value)}
+                      >
+                        {[...Array(item.countInStock).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="p-5 text-right">${item.price}</td>
                     <td className="p-5 text-center">
                       <button
@@ -95,3 +111,5 @@ export default function CartScreen() {
     </Layout>
   );
 }
+
+export default dynamic(() => Promise.resolve(CartScreen), { ssr: false });

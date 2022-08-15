@@ -56,13 +56,13 @@ export default function Layout({ children, title }) {
               {status === 'loading' ? (
                 'Loading'
               ) : session?.user ? (
-                <div class="dropdown dropdown-end">
-                  <label tabindex="0" class="btn  btn-ghost m-1">
+                <div className="dropdown dropdown-end">
+                  <label tabIndex="0" className="btn  btn-ghost m-1">
                     {session.user.name}
                   </label>
                   <ul
-                    tabindex="0"
-                    class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                    tabIndex="0"
+                    className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
                   >
                     <li>
                       <a>Profile</a>

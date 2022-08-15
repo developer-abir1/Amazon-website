@@ -4,9 +4,16 @@ import Link from 'next/link';
 import { Store } from '../utils/store';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { signOut, useSession } from 'next-auth/react';
+import { Menu } from '@headlessui/react';
+import Cookies from 'js-cookie';
 
 export default function Layout({ children, title }) {
-  const { state, dispatch } = useContext(Store);
+  const { status, data: session } = useSession();
+
+  const { state } = useContext(Store);
   const { cart } = state;
 
   const [cartStockCount, setCartStockCount] = useState(0);
@@ -15,12 +22,18 @@ export default function Layout({ children, title }) {
     setCartStockCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
   }, [cart.cartItems]);
 
+  const handleLogout = () => {
+    Cookies.remove('cart');
+    signOut({ callbackUrl: '/login' });
+  };
+
   return (
     <>
       <Head>
         <title>{title ? title + '- Amazona' : 'Amazona'}</title>
         <meta name="description" content="Next amzona next app" />
       </Head>
+      <ToastContainer position="bottom-center" limit={1} />
       <div className="flex  min-h-screen  flex-col  justify-between  ">
         <header>
           <div className="navbar shadow-md">
@@ -40,9 +53,33 @@ export default function Layout({ children, title }) {
                   )}
                 </a>
               </Link>
-              <Link href="/login">
-                <a className="mr-2 p-2 btn btn-ghost">Login</a>
-              </Link>
+              {status === 'loading' ? (
+                'Loading'
+              ) : session?.user ? (
+                <div class="dropdown dropdown-end">
+                  <label tabindex="0" class="btn  btn-ghost m-1">
+                    {session.user.name}
+                  </label>
+                  <ul
+                    tabindex="0"
+                    class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                  >
+                    <li>
+                      <a>Profile</a>
+                    </li>
+                    <li>
+                      <a>Dashboard</a>
+                    </li>
+                    <li>
+                      <a onClick={handleLogout}>Logout</a>
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <Link href="/login">
+                  <a className="btn btn-ghost">Login</a>
+                </Link>
+              )}
             </div>
           </div>
         </header>
